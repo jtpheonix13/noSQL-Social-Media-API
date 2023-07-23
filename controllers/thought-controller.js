@@ -69,6 +69,12 @@ module.exports = {
             if (!thought) {
             res.status(404).json({ message: 'No thought exists' });
             }
+
+            await User.findOneAndUpdate(
+                { username: thought.username},
+                { $pull: { thoughts: req.params.thoughtId }},
+                { new: true }
+            );
     
             res.json({ message: 'Thought deleted!' });
         } catch (err) {
@@ -79,6 +85,7 @@ module.exports = {
     // create a reaction stored in a thoughts reactions array
     async addReaction(req, res) {
         try {
+            console.log('hit');
             const thought = await Thought.findOneAndUpdate(
                 { _id: req.params.thoughtId },
                 { $addToSet: { reactions: req.body }},
@@ -100,7 +107,7 @@ module.exports = {
         try {
             const thought = await Thought.findOneAndUpdate(
                 { _id: req.params.thoughtId },
-                { $pull: { reactions: { reactionId: req.body.reactionId }}},
+                { $pull: {reactions: {reactionId: req.params.reactionId}}},
                 { runValidators: true, new: true}
             );
 
